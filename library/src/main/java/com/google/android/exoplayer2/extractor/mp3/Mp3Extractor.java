@@ -16,6 +16,8 @@
 package com.google.android.exoplayer2.extractor.mp3;
 
 import android.support.annotation.IntDef;
+import android.text.TextUtils;
+
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.ParserException;
@@ -30,8 +32,11 @@ import com.google.android.exoplayer2.extractor.SeekMap;
 import com.google.android.exoplayer2.extractor.TrackOutput;
 import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.metadata.id3.Id3Decoder;
+import com.google.android.exoplayer2.metadata.id3.TextInformationFrame;
+import com.google.android.exoplayer2.util.AesEncryptionUtil;
 import com.google.android.exoplayer2.util.ParsableByteArray;
 import com.google.android.exoplayer2.util.Util;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -324,6 +329,7 @@ public final class Mp3Extractor implements Extractor {
         metadata = new Id3Decoder(id3FramePredicate).decode(id3Data, tagLength);
         if (metadata != null) {
           gaplessInfoHolder.setFromMetadata(metadata);
+          setKDecode(input,tagLength);//+ setKDecode
         }
       } else {
         input.advancePeekPosition(framesLength);
@@ -417,4 +423,22 @@ public final class Mp3Extractor implements Extractor {
 
   }
 
+  //+ ============================@KDecode@============================
+  public void setKDecode(ExtractorInput input, int decodeOffset) {
+    for (int i = 0; i < metadata.length(); i++) {
+      Metadata.Entry entry = metadata.get(i);
+      if (entry instanceof TextInformationFrame) {
+        TextInformationFrame commentFrame = (TextInformationFrame) entry;
+        //kei(k-encode-info):kev(k-encode-version),kkid(k-key-id),kkey(k-key)
+        if ("kei".equals(commentFrame.description)) {
+          String[] split = commentFrame.value.split(",");
+          String kev = split[0];
+          String kkid = split[1];
+          String kkey = split[2];
+
+          //TODO private parser decode info
+        }
+      }
+    }
+  }
 }

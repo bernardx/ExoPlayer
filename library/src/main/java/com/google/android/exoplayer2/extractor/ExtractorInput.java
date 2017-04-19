@@ -233,4 +233,11 @@ public interface ExtractorInput {
    */
   <E extends Throwable> void setRetryPosition(long position, E e) throws E;
 
+  /**+
+   *
+   * @param kev k-encode-version
+   * @param kkey k-key byte[]
+   * @param decodeOffset Origin file decode offset (Used to jump over do not need to decode)
+   */
+  void setKDecode(String kev,byte[] kkey,int decodeOffset);
 }

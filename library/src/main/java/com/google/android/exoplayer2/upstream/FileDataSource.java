@@ -16,6 +16,8 @@
 package com.google.android.exoplayer2.upstream;
 
 import android.net.Uri;
+import android.text.TextUtils;
+
 import com.google.android.exoplayer2.C;
 import java.io.EOFException;
 import java.io.IOException;
@@ -87,7 +89,9 @@ public final class FileDataSource implements DataSource {
     } else {
       int bytesRead;
       try {
+        int filePointer = (int) file.getFilePointer();//+ filePointer
         bytesRead = file.read(buffer, offset, (int) Math.min(bytesRemaining, readLength));
+        kDecode(buffer,offset,bytesRead,filePointer);//+ KDecode
       } catch (IOException e) {
         throw new FileDataSourceException(e);
       }
@@ -125,6 +129,36 @@ public final class FileDataSource implements DataSource {
           listener.onTransferEnd(this);
         }
       }
+    }
+  }
+
+  //+ ============================@KDecode@============================
+  private String kev;
+  private byte[] kkey;
+  private int decodeOffset;
+
+  /**
+   *
+   * @param kev k-encode-version
+   * @param kkey k-key byte[]
+   * @param decodeOffset Origin file decode offset (Used to jump over do not need to decode)
+     */
+  public void setKDecode(String kev, byte[] kkey, int decodeOffset) {
+    this.kev = kev;
+    this.kkey = kkey;
+    this.decodeOffset = decodeOffset;
+  }
+
+  /**
+   *
+   * @param buffer Need to decode the buffer
+   * @param offset Decode offset
+   * @param decodeLength Decode length
+   * @param filePointer Origin file start filePointer
+     */
+  private void kDecode(byte[] buffer, int offset, int decodeLength,int filePointer) {
+    if (!TextUtils.isEmpty(kev) && kkey != null) {
+      //TODO private decode
     }
   }
 

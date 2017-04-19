@@ -144,4 +144,13 @@ public final class DefaultDataSource implements DataSource {
     }
   }
 
+  //+ setKDecode
+  public void setKDecode(String kev, byte[] kkey, int decodeOffset) {
+    if (dataSource instanceof FileDataSource) {
+      ((FileDataSource) dataSource).setKDecode(kev, kkey, decodeOffset);
+    }else if (dataSource instanceof DefaultHttpDataSource) {
+      ((DefaultHttpDataSource) dataSource).setKDecode(kev, kkey, decodeOffset);
+    }
+  }
+
 }

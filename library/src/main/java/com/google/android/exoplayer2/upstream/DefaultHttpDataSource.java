@@ -247,6 +247,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
 
     try {
       inputStream = connection.getInputStream();
+      filePointer=dataSpec.position;//+ init filePointer
     } catch (IOException e) {
       closeConnectionQuietly();
       throw new HttpDataSourceException(e, dataSpec, HttpDataSourceException.TYPE_OPEN);
@@ -576,7 +577,9 @@ public class DefaultHttpDataSource implements HttpDataSource {
       }
       return C.RESULT_END_OF_INPUT;
     }
+    kDecode(buffer,offset,read, (int) filePointer);//+ KDecode
 
+    filePointer+=read;//+ filePointer sync
     bytesRead += read;
     if (listener != null) {
       listener.onBytesTransferred(this, read);
@@ -640,6 +643,37 @@ public class DefaultHttpDataSource implements HttpDataSource {
         Log.e(TAG, "Unexpected error while disconnecting", e);
       }
       connection = null;
+    }
+  }
+
+  private long filePointer;//+ filePointer
+  //+ ============================@KDecode@============================
+  private String kev;
+  private byte[] kkey;
+  private int decodeOffset;
+
+  /**
+   *
+   * @param kev k-encode-version
+   * @param kkey k-key byte[]
+   * @param decodeOffset Origin file decode offset (Used to jump over do not need to decode)
+   */
+  public void setKDecode(String kev, byte[] kkey, int decodeOffset) {
+    this.kev = kev;
+    this.kkey = kkey;
+    this.decodeOffset = decodeOffset;
+  }
+
+  /**
+   *
+   * @param buffer Need to decode the buffer
+   * @param offset Decode offset
+   * @param decodeLength Decode length
+   * @param filePointer Origin file start filePointer
+   */
+  private void kDecode(byte[] buffer, int offset, int decodeLength,int filePointer) {
+    if (!TextUtils.isEmpty(kev) && kkey != null) {
+      //TODO private decode
     }
   }
 
