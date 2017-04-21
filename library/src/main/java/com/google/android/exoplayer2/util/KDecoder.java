@@ -87,7 +87,7 @@ public class KDecoder {
      * @param filePointer  Origin file start filePointer
      */
     public void decode(byte[] buffer, int offset, int decodeLength, int filePointer) {
-        if (!TextUtils.isEmpty(kev) && kkey != null) {
+        if (!TextUtils.isEmpty(kev) && S != null) {
             // =========@private@=========
             // TODO decode... switch (kkey)
             // =========@private@=========
