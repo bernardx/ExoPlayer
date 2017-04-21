@@ -16,6 +16,8 @@
 package com.google.android.exoplayer2.extractor;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.util.KDecoder;
+
 import java.io.EOFException;
 import java.io.IOException;
 
@@ -234,10 +236,8 @@ public interface ExtractorInput {
   <E extends Throwable> void setRetryPosition(long position, E e) throws E;
 
   /**+
-   *
-   * @param kev k-encode-version
-   * @param kkey k-key byte[]
-   * @param decodeOffset Origin file decode offset (Used to jump over do not need to decode)
+   * Decode KEncode Mp3
+   * @param kDecoder KDecoder.create(kei)
    */
-  void setKDecode(String kev,byte[] kkey,int decodeOffset);
+  void setKDecoder(KDecoder kDecoder);
 }

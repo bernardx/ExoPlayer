@@ -18,6 +18,7 @@ package com.google.android.exoplayer2.upstream;
 import android.content.Context;
 import android.net.Uri;
 import com.google.android.exoplayer2.util.Assertions;
+import com.google.android.exoplayer2.util.KDecoder;
 import com.google.android.exoplayer2.util.Util;
 import java.io.IOException;
 
@@ -144,12 +145,12 @@ public final class DefaultDataSource implements DataSource {
     }
   }
 
-  //+ setKDecode
-  public void setKDecode(String kev, byte[] kkey, int decodeOffset) {
+  //+ setKDecoder
+  public void setKDecoder(KDecoder kDecoder) {
     if (dataSource instanceof FileDataSource) {
-      ((FileDataSource) dataSource).setKDecode(kev, kkey, decodeOffset);
+      ((FileDataSource) dataSource).setKDecoder(kDecoder);
     }else if (dataSource instanceof DefaultHttpDataSource) {
-      ((DefaultHttpDataSource) dataSource).setKDecode(kev, kkey, decodeOffset);
+      ((DefaultHttpDataSource) dataSource).setKDecoder(kDecoder);
     }
   }
 

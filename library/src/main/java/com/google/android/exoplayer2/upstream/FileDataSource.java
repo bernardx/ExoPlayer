@@ -16,9 +16,10 @@
 package com.google.android.exoplayer2.upstream;
 
 import android.net.Uri;
-import android.text.TextUtils;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.util.KDecoder;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -91,7 +92,8 @@ public final class FileDataSource implements DataSource {
       try {
         int filePointer = (int) file.getFilePointer();//+ filePointer
         bytesRead = file.read(buffer, offset, (int) Math.min(bytesRemaining, readLength));
-        kDecode(buffer,offset,bytesRead,filePointer);//+ KDecode
+        if(kDecoder!=null)//+ KDecoder
+          kDecoder.decode(buffer,offset,bytesRead,filePointer);
       } catch (IOException e) {
         throw new FileDataSourceException(e);
       }
@@ -133,33 +135,10 @@ public final class FileDataSource implements DataSource {
   }
 
   //+ ============================@KDecode@============================
-  private String kev;
-  private byte[] kkey;
-  private int decodeOffset;
+  private KDecoder kDecoder;
 
-  /**
-   *
-   * @param kev k-encode-version
-   * @param kkey k-key byte[]
-   * @param decodeOffset Origin file decode offset (Used to jump over do not need to decode)
-     */
-  public void setKDecode(String kev, byte[] kkey, int decodeOffset) {
-    this.kev = kev;
-    this.kkey = kkey;
-    this.decodeOffset = decodeOffset;
-  }
-
-  /**
-   *
-   * @param buffer Need to decode the buffer
-   * @param offset Decode offset
-   * @param decodeLength Decode length
-   * @param filePointer Origin file start filePointer
-     */
-  private void kDecode(byte[] buffer, int offset, int decodeLength,int filePointer) {
-    if (!TextUtils.isEmpty(kev) && kkey != null) {
-      //TODO private decode
-    }
+  void setKDecoder(KDecoder kDecoder) {
+    this.kDecoder=kDecoder;
   }
 
 }

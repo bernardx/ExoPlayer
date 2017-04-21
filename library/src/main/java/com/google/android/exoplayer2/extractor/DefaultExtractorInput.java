@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.util.Assertions;
+import com.google.android.exoplayer2.util.KDecoder;
 import com.google.android.exoplayer2.util.Util;
 import java.io.EOFException;
 import java.io.IOException;
@@ -276,11 +277,11 @@ public final class DefaultExtractorInput implements ExtractorInput {
     }
   }
 
-  //+ setKDecode
+  //+ setKDecoder
   @Override
-  public void setKDecode(String kev, byte[] kkey, int decodeOffset) {
+  public void setKDecoder(KDecoder kDecoder) {
     if (dataSource instanceof DefaultDataSource)
-      ((DefaultDataSource) dataSource).setKDecode(kev, kkey, decodeOffset);
+      ((DefaultDataSource) dataSource).setKDecoder(kDecoder);
   }
 
 }
