@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.media.MediaCodec;
 import android.media.PlaybackParams;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.IntDef;
 import android.util.Log;
@@ -37,12 +38,14 @@ import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
 import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.metadata.MetadataRenderer;
+import com.google.android.exoplayer2.sonic.SonicMediaCodecAudioRenderer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextRenderer;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.MediaCodecVideoRenderer;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import java.lang.annotation.Retention;
@@ -693,8 +696,10 @@ public class SimpleExoPlayer implements ExoPlayer {
       DrmSessionManager<FrameworkMediaCrypto> drmSessionManager,
       @ExtensionRendererMode int extensionRendererMode, AudioRendererEventListener eventListener,
       AudioProcessor[] audioProcessors, ArrayList<Renderer> out) {
-    out.add(new MediaCodecAudioRenderer(MediaCodecSelector.DEFAULT, drmSessionManager, true,
-        mainHandler, eventListener, AudioCapabilities.getCapabilities(context), audioProcessors));
+    //+ Util.SDK_INT < 23 -> SonicMediaCodecAudioRenderer
+    out.add(Util.SDK_INT >= 23 ? new MediaCodecAudioRenderer(MediaCodecSelector.DEFAULT, drmSessionManager, true,
+        mainHandler, eventListener, AudioCapabilities.getCapabilities(context), audioProcessors) : (sonicMediaCodecAudioRenderer = new SonicMediaCodecAudioRenderer(MediaCodecSelector.DEFAULT, drmSessionManager, true,
+        mainHandler, eventListener, AudioCapabilities.getCapabilities(context), audioProcessors)));
 
     if (extensionRendererMode == EXTENSION_RENDERER_MODE_OFF) {
       return;
@@ -1033,6 +1038,62 @@ public class SimpleExoPlayer implements ExoPlayer {
       this.params = params;
     }
 
+  }
+
+  //+ ============================@Playback Sonic@============================
+
+  private SonicMediaCodecAudioRenderer sonicMediaCodecAudioRenderer;
+
+  private float speed = 1.0f;
+  private float pitch = 1.0f;
+
+  public float getPlaybackSpeed() {
+    if (Build.VERSION.SDK_INT >= 23)
+      return speed;
+    else if (sonicMediaCodecAudioRenderer != null)
+      return sonicMediaCodecAudioRenderer.getSonicSpeed();
+    return 1.0f;
+  }
+
+  public void setPlaybackSpeed(float speed) {
+    this.speed = speed;
+    if (Build.VERSION.SDK_INT >= 23) {
+      PlaybackParams params = new PlaybackParams();
+      params.setSpeed(speed);
+      setPlaybackParams(params);
+    } else if (sonicMediaCodecAudioRenderer != null) {
+      sonicMediaCodecAudioRenderer.setSonicSpeed(speed);
+    }
+  }
+
+  public void setPlaybackPitch(float pitch) {
+    this.pitch = pitch;
+    if (Build.VERSION.SDK_INT >= 23) {
+      PlaybackParams params = new PlaybackParams();
+      params.setPitch(pitch);
+      setPlaybackParams(params);
+    } else if (sonicMediaCodecAudioRenderer != null) {
+      sonicMediaCodecAudioRenderer.setSonicPitch(pitch);
+    }
+  }
+
+  public float getPlaybackPitch() {
+    if (Build.VERSION.SDK_INT >= 23)
+      return pitch;
+    else if (sonicMediaCodecAudioRenderer != null)
+      return sonicMediaCodecAudioRenderer.getSonicPitch();
+    return 1.0f;
+  }
+
+  public void setPlaybackRate(float rate) {
+    if (sonicMediaCodecAudioRenderer != null)
+      sonicMediaCodecAudioRenderer.setSonicPitch(rate);
+  }
+
+  public float getPlaybackRate() {
+    if (sonicMediaCodecAudioRenderer != null)
+      return sonicMediaCodecAudioRenderer.getSonicRate();
+    return 1.0f;
   }
 
 }
