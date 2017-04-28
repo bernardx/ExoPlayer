@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.google.android.exoplayer2.util;
+package com.google.android.exoplayer2.decoder;
 
 import android.text.TextUtils;
 
