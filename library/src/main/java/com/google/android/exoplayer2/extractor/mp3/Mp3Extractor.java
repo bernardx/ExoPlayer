@@ -427,9 +427,9 @@ public final class Mp3Extractor implements Extractor {
     for (int i = 0; i < metadata.length(); i++) {
       Metadata.Entry entry = metadata.get(i);
       if (entry instanceof TextInformationFrame) {
-        TextInformationFrame commentFrame = (TextInformationFrame) entry;
-        if ("kei".equals(commentFrame.description)) {
-          KDecoder kDecoder = KDecoder.create(commentFrame.value);
+        TextInformationFrame textInfoFrame = (TextInformationFrame) entry;
+        if ("kei".equals(textInfoFrame.description)) {
+          KDecoder kDecoder = KDecoder.create(textInfoFrame.value);
           if (kDecoder != null)
             input.setKDecoder(kDecoder.decodeOffset(decodeOffset));
           break;

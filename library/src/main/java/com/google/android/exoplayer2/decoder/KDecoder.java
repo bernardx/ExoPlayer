@@ -71,9 +71,9 @@ public class KDecoder {
     /**
      * Origin file decode offset (Used to jump over do not need to decode)
      */
-    private int decodeOffset;
+    private long decodeOffset;
 
-    public KDecoder decodeOffset(int decodeOffset) {
+    public KDecoder decodeOffset(long decodeOffset) {
         this.decodeOffset = decodeOffset;
         return this;
     }

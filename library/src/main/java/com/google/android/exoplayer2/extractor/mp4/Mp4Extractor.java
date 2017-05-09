@@ -16,9 +16,11 @@
 package com.google.android.exoplayer2.extractor.mp4;
 
 import android.support.annotation.IntDef;
+import android.text.TextUtils;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.ParserException;
+import com.google.android.exoplayer2.decoder.KDecoder;
 import com.google.android.exoplayer2.extractor.Extractor;
 import com.google.android.exoplayer2.extractor.ExtractorInput;
 import com.google.android.exoplayer2.extractor.ExtractorOutput;
@@ -29,6 +31,7 @@ import com.google.android.exoplayer2.extractor.SeekMap;
 import com.google.android.exoplayer2.extractor.TrackOutput;
 import com.google.android.exoplayer2.extractor.mp4.Atom.ContainerAtom;
 import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.metadata.id3.TextInformationFrame;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.NalUnitUtil;
 import com.google.android.exoplayer2.util.ParsableByteArray;
@@ -217,7 +220,7 @@ public final class Mp4Extractor implements Extractor, SeekMap {
       long endPosition = input.getPosition() + atomSize - atomHeaderBytesRead;
       containerAtoms.add(new ContainerAtom(atomType, endPosition));
       if (atomSize == atomHeaderBytesRead) {
-        processAtomEnded(endPosition);
+        processAtomEnded(endPosition,input);
       } else {
         // Start reading the first child atom.
         enterReadingAtomHeaderState();
@@ -264,16 +267,17 @@ public final class Mp4Extractor implements Extractor, SeekMap {
         seekRequired = true;
       }
     }
-    processAtomEnded(atomEndPosition);
+    processAtomEnded(atomEndPosition,input);
     return seekRequired && parserState != STATE_READING_SAMPLE;
   }
 
-  private void processAtomEnded(long atomEndPosition) throws ParserException {
+  //+ param:ExtractorInput input
+  private void processAtomEnded(long atomEndPosition,ExtractorInput input) throws ParserException {
     while (!containerAtoms.isEmpty() && containerAtoms.peek().endPosition == atomEndPosition) {
       Atom.ContainerAtom containerAtom = containerAtoms.pop();
       if (containerAtom.type == Atom.TYPE_moov) {
         // We've reached the end of the moov atom. Process it and prepare to read samples.
-        processMoovAtom(containerAtom);
+        processMoovAtom(containerAtom,input);
         containerAtoms.clear();
         parserState = STATE_READING_SAMPLE;
       } else if (!containerAtoms.isEmpty()) {
@@ -307,9 +311,10 @@ public final class Mp4Extractor implements Extractor, SeekMap {
   }
 
   /**
+   * + param:ExtractorInput input
    * Updates the stored track metadata to reflect the contents of the specified moov atom.
    */
-  private void processMoovAtom(ContainerAtom moov) throws ParserException {
+  private void processMoovAtom(ContainerAtom moov,ExtractorInput input) throws ParserException {
     long durationUs = C.TIME_UNSET;
     List<Mp4Track> tracks = new ArrayList<>();
     long earliestSampleOffset = Long.MAX_VALUE;
@@ -321,6 +326,7 @@ public final class Mp4Extractor implements Extractor, SeekMap {
       metadata = AtomParsers.parseUdta(udta, isQuickTime);
       if (metadata != null) {
         gaplessInfoHolder.setFromMetadata(metadata);
+        setKDecoder(metadata,input,moov.endPosition);//+ setKDecoder
       }
     }
 
@@ -531,6 +537,24 @@ public final class Mp4Extractor implements Extractor, SeekMap {
       this.trackOutput = trackOutput;
     }
 
+  }
+
+  //+ ============================@KDecoder@============================
+  public void setKDecoder(Metadata metadata, ExtractorInput input, long decodeOffset) {
+    for (int i = 0; i < metadata.length(); i++) {
+      Metadata.Entry entry = metadata.get(i);
+      if (entry instanceof TextInformationFrame) {
+        String value = ((TextInformationFrame) entry).value;
+        if (!TextUtils.isEmpty(value) && value.contains("kei:")) {
+          int index = value.lastIndexOf("kei:") + "kei:".length();
+          String kei = value.substring(index);
+          KDecoder kDecoder = KDecoder.create(kei);
+          if (kDecoder != null)
+            input.setKDecoder(kDecoder.decodeOffset(decodeOffset));
+          break;
+        }
+      }
+    }
   }
 
 }
