@@ -22,12 +22,6 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
     }
 
-    sourceSets {
-        androidTest {
-            java.srcDirs += "../../testutils/src/main/java/"
-        }
-    }
-
     buildTypes {
         debug {
             testCoverageEnabled = true
@@ -38,18 +32,13 @@ android {
 dependencies {
     compile project(':library-core')
     compile 'com.android.support:support-annotations:' + supportLibraryVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker:' + dexmakerVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
-    androidTestCompile 'org.mockito:mockito-core:' + mockitoVersion
 }
 
 ext {
     javadocTitle = 'SmoothStreaming module'
 }
-apply from: '../../javadoc_library.gradle'
 
 ext {
     releaseArtifact = 'exoplayer-smoothstreaming'
     releaseDescription = 'The ExoPlayer library SmoothStreaming module.'
 }
-apply from: '../../publish.gradle'

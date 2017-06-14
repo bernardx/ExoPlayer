@@ -32,18 +32,13 @@ android {
 dependencies {
     compile project(':library-core')
     compile 'com.android.support:support-annotations:' + supportLibraryVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker:' + dexmakerVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
-    androidTestCompile 'org.mockito:mockito-core:' + mockitoVersion
 }
 
 ext {
     javadocTitle = 'HLS module'
 }
-apply from: '../../javadoc_library.gradle'
 
 ext {
     releaseArtifact = 'exoplayer-hls'
     releaseDescription = 'The ExoPlayer library HLS module.'
 }
-apply from: '../../publish.gradle'

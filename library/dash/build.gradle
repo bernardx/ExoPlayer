@@ -22,12 +22,6 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
     }
 
-    sourceSets {
-        androidTest {
-            java.srcDirs += "../../testutils/src/main/java/"
-        }
-    }
-
     buildTypes {
         debug {
             testCoverageEnabled = true
@@ -39,18 +33,13 @@ dependencies {
     compile project(':library-core')
     compile 'com.android.support:support-annotations:' + supportLibraryVersion
     compile 'com.android.support:support-core-utils:' + supportLibraryVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker:' + dexmakerVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
-    androidTestCompile 'org.mockito:mockito-core:' + mockitoVersion
 }
 
 ext {
     javadocTitle = 'DASH module'
 }
-apply from: '../../javadoc_library.gradle'
 
 ext {
     releaseArtifact = 'exoplayer-dash'
     releaseDescription = 'The ExoPlayer library DASH module.'
 }
-apply from: '../../publish.gradle'

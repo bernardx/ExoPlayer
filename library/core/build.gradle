@@ -22,12 +22,6 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
     }
 
-    sourceSets {
-        androidTest {
-            java.srcDirs += "../../testutils/src/main/java/"
-        }
-    }
-
     buildTypes {
         debug {
             testCoverageEnabled = true
@@ -37,18 +31,13 @@ android {
 
 dependencies {
     compile 'com.android.support:support-annotations:' + supportLibraryVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker:' + dexmakerVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
-    androidTestCompile 'org.mockito:mockito-core:' + mockitoVersion
 }
 
 ext {
     javadocTitle = 'Core module'
 }
-apply from: '../../javadoc_library.gradle'
 
 ext {
     releaseArtifact = 'exoplayer-core'
     releaseDescription = 'The ExoPlayer library core module.'
 }
-apply from: '../../publish.gradle'
