@@ -58,7 +58,8 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
       boolean playClearSamplesWithoutKeys, Handler eventHandler,
       AudioRendererEventListener eventListener, AudioCapabilities audioCapabilities,
       AudioProcessor... audioProcessors) {
-    super(mediaCodecSelector, drmSessionManager, playClearSamplesWithoutKeys, eventHandler, eventListener, audioCapabilities, audioProcessors);
+    super(mediaCodecSelector, drmSessionManager, playClearSamplesWithoutKeys, eventHandler,
+        eventListener, audioCapabilities, audioProcessors);
     //Init
     bufferIndex = -1;
     speed = 1.0f;
@@ -71,16 +72,21 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   @Override
-  protected final void onOutputFormatChanged(MediaCodec codec, MediaFormat outputFormat) throws ExoPlaybackException {
+  protected final void onOutputFormatChanged(MediaCodec codec, MediaFormat outputFormat)
+      throws ExoPlaybackException {
     super.onOutputFormatChanged(codec, outputFormat);
     this.outputFormat = outputFormat;
-    if (sonic != null)
-      sonic.allocateStreamBuffers(outputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE), outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT));
+    if (sonic != null) {
+      sonic.allocateStreamBuffers(outputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE),
+          outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT));
+    }
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   @Override
-  protected boolean processOutputBuffer(long positionUs, long elapsedRealtimeUs, MediaCodec codec, ByteBuffer buffer, int bufferIndex, int bufferFlags, long bufferPresentationTimeUs, boolean shouldSkip) throws ExoPlaybackException {
+  protected boolean processOutputBuffer(long positionUs, long elapsedRealtimeUs, MediaCodec codec,
+      ByteBuffer buffer, int bufferIndex, int bufferFlags, long bufferPresentationTimeUs,
+      boolean shouldSkip) throws ExoPlaybackException {
     if (bufferIndex != this.bufferIndex) {
       this.bufferIndex = bufferIndex;
       if ((speed != 1.0f || pitch != 1.0f || rate != 1.0f) && initSonic(buffer.remaining())) {
@@ -101,18 +107,23 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
           buffer.put(sonicBuffer, 0, sonicProcessingSize);
           buffer.position(position);
         } else {//Use bufferSub replace buffer
-          if (bufferSub == null || bufferSub.capacity() != sonicBuffer.length)
-            bufferSub = ByteBuffer.wrap(sonicBuffer, 0, 0);
+          if (bufferSub == null || bufferSub.capacity() != sonicBuffer.length) {
+            bufferSub = ByteBuffer.wrap(sonicBuffer, 0, sonicProcessingSize);
+          }
           bufferSub.position(0);
           bufferSub.limit(sonicProcessingSize);
         }
-      } else if (bufferSub != null)
+      } else if (bufferSub != null) {
         bufferSub = null;
+      }
     }
-    if (bufferSub != null && buffer.isReadOnly())
+    if (bufferSub != null && buffer.isReadOnly()) {
       buffer = bufferSub;
+    }
 
-    return super.processOutputBuffer(positionUs, elapsedRealtimeUs, codec, buffer, bufferIndex, bufferFlags, bufferPresentationTimeUs, shouldSkip);
+    return super
+        .processOutputBuffer(positionUs, elapsedRealtimeUs, codec, buffer, bufferIndex, bufferFlags,
+            bufferPresentationTimeUs, shouldSkip);
   }
 
   // ------------------------------K------------------------------@Sonic
@@ -121,7 +132,8 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
   private boolean initSonic(int bufferSize) {
     //Sonic
     if (sonic == null && outputFormat != null) {
-      sonic = new Sonic(outputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE), outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT));
+      sonic = new Sonic(outputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE),
+          outputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT));
       sonic.setSpeed(speed);
       sonic.setPitch(pitch);
       sonic.setRate(rate);
@@ -129,10 +141,11 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
     //Buffer
     if (sonic != null) {
       if (sonicBuffer == null) {
-        if (4096 >= bufferSize)
+        if (4096 >= bufferSize) {
           sonicBuffer = new byte[4096];//AAC 1024*2(16BIT)*2(stereo) 4096Byte
-        else
+        } else {
           sonicBuffer = new byte[bufferSize];
+        }
       } else if (sonicBuffer.length < bufferSize) {
         sonicBuffer = new byte[bufferSize];
       }
@@ -142,41 +155,47 @@ public final class SonicMediaCodecAudioRenderer extends MediaCodecAudioRenderer 
 
   public void setSonicSpeed(float speed) {
     this.speed = speed;
-    if (sonic != null)
+    if (sonic != null) {
       sonic.setSpeed(speed);
+    }
   }
 
   public float getSonicSpeed() {
-    if (sonic != null)
+    if (sonic != null) {
       return sonic.getSpeed();
-    else
+    } else {
       return speed;
+    }
   }
 
   public void setSonicPitch(float pitch) {
     this.pitch = pitch;
-    if (sonic != null)
+    if (sonic != null) {
       sonic.setPitch(pitch);
+    }
   }
 
   public float getSonicPitch() {
-    if (sonic != null)
+    if (sonic != null) {
       return sonic.getPitch();
-    else
+    } else {
       return pitch;
+    }
   }
 
   public void setSonicRate(float rate) {
     this.rate = rate;
-    if (sonic != null)
+    if (sonic != null) {
       sonic.setRate(rate);
+    }
   }
 
   public float getSonicRate() {
-    if (sonic != null)
+    if (sonic != null) {
       return sonic.getRate();
-    else
+    } else {
       return rate;
+    }
   }
 }
 
