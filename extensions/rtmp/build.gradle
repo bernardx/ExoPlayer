@@ -28,14 +28,3 @@ dependencies {
     compile project(modulePrefix + 'library-core')
     compile 'net.butterflytv.utils:rtmp-client:3.0.0'
 }
-
-ext {
-    javadocTitle = 'RTMP extension'
-}
-apply from: '../../javadoc_library.gradle'
-
-ext {
-    releaseArtifact = 'extension-rtmp'
-    releaseDescription = 'RTMP extension for ExoPlayer.'
-}
-apply from: '../../publish.gradle'

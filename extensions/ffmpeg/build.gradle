@@ -33,8 +33,3 @@ android {
 dependencies {
     compile project(modulePrefix + 'library-core')
 }
-
-ext {
-    javadocTitle = 'FFmpeg extension'
-}
-apply from: '../../javadoc_library.gradle'

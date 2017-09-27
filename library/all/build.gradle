@@ -31,9 +31,3 @@ dependencies {
     compile project(modulePrefix + 'library-smoothstreaming')
     compile project(modulePrefix + 'library-ui')
 }
-
-ext {
-    releaseArtifact = 'exoplayer'
-    releaseDescription = 'The ExoPlayer library (all modules).'
-}
-apply from: '../../publish.gradle'

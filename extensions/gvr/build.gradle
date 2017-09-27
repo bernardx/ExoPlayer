@@ -28,14 +28,3 @@ dependencies {
     compile project(modulePrefix + 'library-core')
     compile 'com.google.vr:sdk-audio:1.60.1'
 }
-
-ext {
-    javadocTitle = 'GVR extension'
-}
-apply from: '../../javadoc_library.gradle'
-
-ext {
-    releaseArtifact = 'extension-gvr'
-    releaseDescription = 'Google VR extension for ExoPlayer.'
-}
-apply from: '../../publish.gradle'

@@ -41,14 +41,3 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
     androidTestCompile 'org.mockito:mockito-core:' + mockitoVersion
 }
-
-ext {
-    javadocTitle = 'DASH module'
-}
-apply from: '../../javadoc_library.gradle'
-
-ext {
-    releaseArtifact = 'exoplayer-dash'
-    releaseDescription = 'The ExoPlayer library DASH module.'
-}
-apply from: '../../publish.gradle'
