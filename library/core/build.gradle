@@ -23,13 +23,6 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
     }
 
-    // Workaround to prevent circular dependency on project :testutils.
-    sourceSets {
-        androidTest {
-            java.srcDirs += "../../testutils/src/main/java/"
-        }
-    }
-
     buildTypes {
         // Re-enable test coverage when the following issue is fixed:
         // https://issuetracker.google.com/issues/37019591
@@ -41,7 +34,4 @@ android {
 
 dependencies {
     compile 'com.android.support:support-annotations:' + supportLibraryVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker:' + dexmakerVersion
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
-    androidTestCompile 'org.mockito:mockito-core:' + mockitoVersion
 }
